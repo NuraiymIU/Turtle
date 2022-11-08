@@ -12,7 +12,10 @@ public class Main {
     static int y;
     static int direction;
     static boolean isPenDown;
+
     static char[][] matrix;
+    static int width;
+    static int height;
 
     static final int NORTH = 0;
     static final int EAST = 1;
@@ -41,15 +44,24 @@ public class Main {
                 case "turnright":
                     turnLeft();
                     break;
+                case "pendown":
+                    penDown();
+                    break;
+                case "penup":
+                    penUp();
+                    break;
             }
             readUserCommand();
         }
     }
 
     static void init() {
+        width = 20;
+        height = 20;
+
         x = 0;
         y = 0;
-        matrix = new char[20][20];
+        matrix = new char[width][height];
 
         for(int row = 0; row < matrix.length; row++) {
             Arrays.fill(matrix[row], '.');
@@ -95,26 +107,29 @@ public class Main {
             }
 
             if(oldX == 0 && oldY != 0) {
-                matrix[oldY - 1][oldX] = isPenDown ? '8' : '=';
+                matrix[oldY - 1][oldX] = isPenDown ? '*' : '.';
             } else if(oldX != 0 && oldY == 0) {
-                matrix[oldY][oldX - 1] =  isPenDown ? '5' : 'p';
+                matrix[oldY][oldX - 1] =  isPenDown ? '*' : '.';
             } else if(oldX == 0 && oldY == 0) {
                 matrix[oldY][oldX] =  isPenDown ? '*': '.';
             } else {
-                matrix[oldY - 1][oldX] = isPenDown ? '*' : '.';
+                matrix[oldY - 1][oldX - 1] = isPenDown ? '*' : '.';
             }
         }
     }
 
     static void readUserCommand() {
         String cmd = scan.nextLine().toLowerCase().trim();
-        String[] partsOfCmd = cmd.split(" ");
+        String[] partsOfCmd = cmd.split("\\s+"); // это регулярное выражение дает возможность несколько пробелов воспринимать как один большой пробел
 
         if(partsOfCmd.length == 1) {
             switch(cmd) {
                 case "print":
                 case "turnleft":
                 case "turnright":
+                case "penup":
+                case "pendown":
+                case "exit":
                     command = partsOfCmd[0];
                     return;
 
@@ -128,8 +143,13 @@ public class Main {
                         partsOfCmd.length > 2) {
             throw new RuntimeException("Incorrect command: " + cmd + "\n" + errorMessage);
         }
-        command = partsOfCmd[0];
-        steps = Integer.parseInt(partsOfCmd[1]);
+
+        try {
+            command = partsOfCmd[0];
+            steps = Integer.parseInt(partsOfCmd[1]);
+        } catch(NumberFormatException e) {
+            throw new RuntimeException("Steps can not be String: " + partsOfCmd[1]);
+        }
     }
 
     static void turnLeft() {

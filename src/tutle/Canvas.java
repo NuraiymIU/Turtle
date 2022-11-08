@@ -12,7 +12,7 @@ public class Canvas {
         matrix = new char[height][width];
 
         for(int row = 0; row < matrix.length; row++) {
-            for(int col = 0; col > matrix[row].length; col++) {
+            for(int col = 0; col < matrix[row].length; col++) {
                 matrix[row][col] = '.';
             }
         }
